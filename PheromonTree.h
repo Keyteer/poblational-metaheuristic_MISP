@@ -42,20 +42,20 @@ struct pheromonTree {
         }
     }
 
-    int search(int father) {
-        if (pheromones[ (1 << father) + 1] < pheromones[ (1 << father) + 2]){
-            if (pheromones[(1 << father) + 2] > n-1){
-                return (1 << father) + 2;
+    int search(int father=0){
+
+        int base;
+        do {
+            base = (1 << father);
+
+            if (pheromones[base + 1] < pheromones[base + 2]){
+                father = base + 2;
             }else{
-                return search((1 << father) + 2);
+                father = base + 1;
             }
-        }else{
-            if (pheromones[(1 << father) + 1] > n-1){
-                return (1 << father) + 1;
-            }else{
-                return search((1 << father) + 1);
-            }
-        }
+        } while (father > n-1);
+
+        return father;
     }
 
 };
