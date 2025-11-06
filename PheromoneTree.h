@@ -1,5 +1,7 @@
 #pragma once
 
+#include <random>
+
 struct pheromoneTree {
 
     int n;
@@ -33,16 +35,26 @@ struct pheromoneTree {
         pheromones[node] += amount;
     }
 
+    private:
+
     void propagate(int node) {
         int current = node;
+        int base;
         while (current > 0) {
             int father = (current - 1) / 2;
-            pheromones[father] = pheromones[current] + pheromones[search(father)];
+            base = (1 << father)+1;
+            if (current == base) {
+                pheromones[father] = pheromones[current] + pheromones[base + 1];
+            } else {
+                pheromones[father] = pheromones[current] + pheromones[base];
+            }
             current = father;
         }
     }
 
-    int search(int father=0){
+    public:
+
+    int maxSearch(int father=0){
 
         int base;
         do {
@@ -56,6 +68,49 @@ struct pheromoneTree {
         } while (father > n-1);
 
         return father;
+    }
+
+    int randSearch(int father=0){
+
+        int base;
+        do {
+            base = (1 << father);
+
+            if (pheromones[base + 1] != 0 && pheromones[base + 2] != 0) {
+                father = base + 1 + rand()%2;
+            } else {
+                if (pheromones[base + 1] != 0 ) {
+                    father = base + 1;
+                } else if (pheromones[base + 2] != 0) {
+                    father = base + 2;
+                } else {
+                    return -1;
+                }
+            }
+        } while (father > n-1);
+
+        return father;
+    }
+
+    int pondSearch(int father=0){
+
+        int base;
+        do {
+            base = (1 << father);
+
+            if (pheromones[base + 1] < pheromones[base + 2]){
+                father = base + 2;
+            }else{
+                father = base + 1;
+            }
+        } while (father > n-1);
+
+        return father;
+    }
+
+    void deletear(int node) {
+        pheromones[node] = 0;
+        propagate(node);
     }
 
 };
