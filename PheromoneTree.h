@@ -1,13 +1,13 @@
 #pragma once
 
-struct pheromonTree {
+struct pheromoneTree {
 
     int n;
     int *pheromones;
     float evaporation_rate;
 
 
-    pheromonTree(int n , float evaporation_rate) {
+    pheromoneTree(int n , float evaporation_rate) {
         this->n = n;
         pheromones = new int[(2*n)-1];
         for (int i = n; i < 2*n; i++) {
@@ -16,7 +16,7 @@ struct pheromonTree {
         }
         this->evaporation_rate = evaporation_rate;
     }
-    ~pheromonTree() {
+    ~pheromoneTree() {
         delete[] pheromones;
     }
 
