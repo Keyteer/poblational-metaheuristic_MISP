@@ -27,8 +27,8 @@ error() {
 }
 
 tmpfile=$(mktemp)
-EXE=../bin/cmsa_stop
-FIXED_PARAMS="-tlim 90 -th 0.8 -tuning 1 "
+EXE=../bin/ant_colony_MISP
+FIXED_PARAMS="-t 10"
 CANDIDATE=$1
 INSTANCEID=$2
 SEED=$3
