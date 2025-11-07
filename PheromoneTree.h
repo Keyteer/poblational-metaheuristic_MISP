@@ -11,11 +11,14 @@ struct pheromoneTree {
         Internal nodes store the sum of pheromone levels of their children.
     */
 
-    int n;
-    int tree_size;
-    int *pheromones;
-    float evaporation_rate;
+    int n;                      // number of leaves (nodes in the graph)
+    int tree_size;              // total size of the tree array  
+    int *pheromones;            // array storing pheromone levels
+    float evaporation_rate;     // rate at which pheromones evaporate
 
+    /*
+        Constructor: initializes the pheromone tree as a deep copy of another tree.
+    */
     pheromoneTree(pheromoneTree const &other) {
         n = other.n;
         tree_size = other.tree_size;
@@ -23,7 +26,12 @@ struct pheromoneTree {
         pheromones = new int[tree_size];
         memcpy(pheromones, other.pheromones, tree_size * sizeof(int));
     }
+    /* 
+        Constructor: initializes the pheromone tree with n leaves and sets
+        the evaporation rate. All leaves start with a pheromone level of 1.
+    */
     pheromoneTree(int n , float evaporation_rate) {
+        // calculate tree size 
         int i = 1;
         while( i < n) {
             i = i << 1;    // search smallest power of 2 greater than n
@@ -31,18 +39,23 @@ struct pheromoneTree {
         tree_size = i*2 - 1;
 
         this->n = n;
+        this->evaporation_rate = evaporation_rate;
+        
+        // initialize pheromone levels
         pheromones = new int[tree_size];
         memset(pheromones, 0, tree_size * sizeof(int));
         for (int i = getLeaf(0); i <= getLeaf(n - 1); i++) {
             pheromones[i] = 1;
         }
         propagateAll();
-        this->evaporation_rate = evaporation_rate;
     }
     ~pheromoneTree() {
         delete[] pheromones;
     }
 
+    /*
+        operator: deep copy of another pheromone tree.
+    */
     pheromoneTree& operator=(const pheromoneTree& other) {
         if (this != &other) {
             delete[] pheromones;
@@ -55,6 +68,11 @@ struct pheromoneTree {
         return *this;
     }
 
+    /*
+        Evaporate: implement the disipation of pheromones in all nodes.
+        This is done by multiplying the pheromone level of each node by (1 - evaporation_rate).
+        Then propagate the changes up the tree.
+    */
     void evaporate() {
         for (int i = getLeaf(0); i <= getLeaf(n - 1); i++) {
             pheromones[i] = static_cast<int>(pheromones[i] * (1.0 - evaporation_rate));
@@ -64,11 +82,17 @@ struct pheromoneTree {
         }
         propagateAll();
     }
+    /*
+        Deposit: add pheromones to a node and propagate the changes up the tree.
+    */
     void deposit(int node, int amount) {
         node = getLeaf(node);
         pheromones[node] += amount;
         propagate(node);
     }
+    /*
+        Invalidate: set the pheromone level of a node to 0 and propagate the changes up the tree.
+    */
     void invalidate(int node) {
         node = getLeaf(node);
         if (pheromones[node] == 0) {
@@ -77,6 +101,9 @@ struct pheromoneTree {
         pheromones[node] = 0;
         propagate(node);
     }
+    /*
+        InvalidateVector: set the pheromone level of a group of nodes in a vector to 0 and propagate the changes up the tree.
+    */
     void invalidateVector(const std::vector<int>& nodes) {
         for (int node : nodes) {
             pheromones[getLeaf(node)] = 0;
@@ -86,18 +113,27 @@ struct pheromoneTree {
 
     private:
 
+    /*
+        Propagate: updates the pheromone levels up the tree from a given node.
+    */
     void propagate(int node) {
         while(node > 0) {
             pheromones[getFather(node)] = pheromones[node] + pheromones[getBrother(node)];
             node = getFather(node);
         }
     }
+    /*
+        PropagateAll: updates the pheromone levels of all internal nodes.
+    */
     void propagateAll() {
         for (int i = tree_size / 2 - 1; i >= 0; i--) {
             pheromones[i] = pheromones[getLeftChild(i)] + pheromones[getRightChild(i)];
         }
     }
 
+    /*
+        Getters for tree navigation.
+    */
     inline int getLeaf(int node) {
         if (node < n) {
             return node + tree_size / 2;
@@ -135,12 +171,17 @@ struct pheromoneTree {
 
     public:
 
+    /*
+        maxSearch: search the node with the highest pheromone level.
+
+    */
     int maxSearch(int father=0){
 
+        // if both children are 0 pheromone, return -1
         if (pheromones[getLeftChild(father)] == 0 && pheromones[getRightChild(father)] == 0) {
             return -1;
         }
-
+        // Find the maximum pheromone child till leaf
         while (!isLeaf(father)) {
             if (pheromones[getLeftChild(father)] < pheromones[getRightChild(father)]){
                 father = getRightChild(father);
@@ -151,16 +192,23 @@ struct pheromoneTree {
 
         return getNodeFromLeaf(father);
     }
+    /*
+        randSearch: selects a random way down the tree to select a node.
+    */
     int randSearch(int father=0){
 
+        // if both children are 0 pheromone, return -1
         if (pheromones[getLeftChild(father)] == 0 && pheromones[getRightChild(father)] == 0) {
             return -1;
         }
 
+        // random walk down the tree
         while (!isLeaf(father)) {
+            // if both children have pheromones, choose randomly
             if (pheromones[getLeftChild(father)] != 0 && pheromones[getRightChild(father)] != 0) {
                 father = getLeftChild(father) + rand()%2;
             } else {
+                // if one child is 0 pheromone, go to the other
                 if (pheromones[getLeftChild(father)] != 0 ) {
                     father = getLeftChild(father);
                 } else {
@@ -171,13 +219,17 @@ struct pheromoneTree {
 
         return getNodeFromLeaf(father);
     }
+    /*
+        PondRandSearch: selects a random way down the tree but biased by pheromone levels.
+    */
     int pondRandSearch(int father=0){
-
+        // if both children are 0 pheromone, return -1
         if (pheromones[getLeftChild(father)] == 0 && pheromones[getRightChild(father)] == 0) {
             return -1;
         }
-
+        // biased random walk down the tree
         while (!isLeaf(father)) {
+            // choose child based on pheromone levels
             if (rand() % (pheromones[getLeftChild(father)] + pheromones[getRightChild(father)]) < pheromones[getLeftChild(father)]) {
                 father = getLeftChild(father);
             }else{
