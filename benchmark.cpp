@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        AntColony(nl, time_limit, evaporation_rate, deposit_amount);
+        AntColony(nl, time_limit, evaporation_rate, deposit_amount, true);
 
         delete nl;
 

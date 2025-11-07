@@ -5,8 +5,12 @@
 
 using namespace std;
 
-int AntColony(NeighList *nl, double time_limit, float evaporation_rate, int deposit_amount, int *iterations=nullptr) {
+int AntColony(NeighList *nl, double time_limit, float evaporation_rate, int deposit_amount, bool verbose=false, int *iterations=nullptr) {
     auto start_time = chrono::high_resolution_clock::now();
+
+    if (iterations == nullptr) {
+        iterations = new int(0);
+    }
     
     pheromoneTree pheromones(nl->n, evaporation_rate);
 
@@ -18,13 +22,16 @@ int AntColony(NeighList *nl, double time_limit, float evaporation_rate, int depo
         if (size > best_size) {
             best_size = size;
             ant->depositInSolution(deposit_amount);
+            
+            if (verbose) {
+                printf("New best size: %d at iteration %d\n", best_size, *iterations);
+            }
         }
         ant->reset();
         pheromones.evaporate();
 
-        if (iterations != nullptr) {
-            (*iterations)++;
-        }
+        (*iterations)++;
+        
     }
 
     return best_size;
