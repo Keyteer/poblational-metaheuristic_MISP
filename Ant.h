@@ -25,15 +25,20 @@ struct Ant{
 
     int constructPondSolution() {
         // assumed empty solution
-        int node;
-        while ((node = tree.pondRandSearch()) != -1) {
+        while (pondSolutionStep() != -1) {}
+        return sol.size();
+    }
+
+    int pondSolutionStep() {
+        int node = tree.pondRandSearch();
+        if (node != -1) {
             sol.push_back(node);
             // invalidate neighbors
             for (int neighbor : nl->neighborhoods[node]) {
                 tree.invalidate(neighbor);
             }
         }
-        return sol.size();
+        return node;
     }
 
     void depositInSolution(int deposit_amount) {
