@@ -15,9 +15,7 @@ struct Ant{
         this->global_tree = tree;
         this->nl = nl;
     }
-    ~Ant(){
-        tree.~pheromoneTree();
-    }
+    ~Ant(){}
     void reset() {
         this->tree = *global_tree;
         sol.clear();
