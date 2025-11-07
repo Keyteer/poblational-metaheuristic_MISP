@@ -1,6 +1,8 @@
 #pragma once
 
 #include <random>
+#include <vector>
+#include <stdexcept>
 
 struct pheromoneTree {
     /*
@@ -24,18 +26,17 @@ struct pheromoneTree {
     pheromoneTree(int n , float evaporation_rate) {
         int i = 1;
         while( i < n) {
-            // search smallest power of 2 greater than n
-            i = i << 1;
+            i = i << 1;    // search smallest power of 2 greater than n
         }
         tree_size = i*2 - 1;
 
         this->n = n;
         pheromones = new int[tree_size];
         memset(pheromones, 0, tree_size * sizeof(int));
-        for (int i = getLeaf(0); i < getLeaf(n - 1); i++) {
+        for (int i = getLeaf(0); i <= getLeaf(n - 1); i++) {
             pheromones[i] = 1;
-            propagate(i);
         }
+        propagateAll();
         this->evaporation_rate = evaporation_rate;
     }
     ~pheromoneTree() {
@@ -54,6 +55,49 @@ struct pheromoneTree {
         return *this;
     }
 
+    void evaporate() {
+        for (int i = getLeaf(0); i <= getLeaf(n - 1); i++) {
+            pheromones[i] = static_cast<int>(pheromones[i] * (1.0 - evaporation_rate));
+            if (pheromones[i] < 1) {
+                pheromones[i] = 1; 
+            }
+        }
+        propagateAll();
+    }
+    void deposit(int node, int amount) {
+        node = getLeaf(node);
+        pheromones[node] += amount;
+        propagate(node);
+    }
+    void invalidate(int node) {
+        node = getLeaf(node);
+        if (pheromones[node] == 0) {
+            return;
+        }
+        pheromones[node] = 0;
+        propagate(node);
+    }
+    void invalidateVector(const std::vector<int>& nodes) {
+        for (int node : nodes) {
+            pheromones[getLeaf(node)] = 0;
+        }
+        propagateAll();
+    }
+
+    private:
+
+    void propagate(int node) {
+        while(node > 0) {
+            pheromones[getFather(node)] = pheromones[node] + pheromones[getBrother(node)];
+            node = getFather(node);
+        }
+    }
+    void propagateAll() {
+        for (int i = tree_size / 2 - 1; i >= 0; i--) {
+            pheromones[i] = pheromones[getLeftChild(i)] + pheromones[getRightChild(i)];
+        }
+    }
+
     inline int getLeaf(int node) {
         if (node < n) {
             return node + tree_size / 2;
@@ -64,97 +108,84 @@ struct pheromoneTree {
         }
         return -1;
     }
-
-    void evaporate() {
-        for (int i = n; i < 2*n; i++) {
-            pheromones[i] = static_cast<int>(pheromones[i] * (1.0 - evaporation_rate));
-            if (pheromones[i] < 1) {
-                pheromones[i] = 1; 
-            }
-            propagate(i);
-        }
-    }
-    void deposit(int node, int amount) {
-        node = getLeaf(node);
-        pheromones[node] += amount;
-        propagate(node);
+    inline int getNodeFromLeaf(int leaf) {
+        return leaf - tree_size / 2;
     }
 
-    private:
-
-    void propagate(int node) {
-        int current = node;
-        int base;
-        while (current > 0) {
-            int father = (current - 1) / 2;
-            base = (1 << father)+1;
-            if (current == base) {
-                pheromones[father] = pheromones[current] + pheromones[base + 1];
-            } else {
-                pheromones[father] = pheromones[current] + pheromones[base];
-            }
-            current = father;
+    inline int getFather(int node) {
+        return (node - 1) / 2;
+    }
+    inline int getLeftChild(int node) {
+        return (node << 1) + 1;
+    }
+    inline int getRightChild(int node) {
+        return (node << 1) + 2;
+    }
+    inline int getBrother(int node) {
+        // returns -1 if root
+        if (node % 2 == 0) {
+            return node - 1;
+        } else {
+            return node + 1;
         }
+    }
+    inline bool isLeaf(int node) {
+        return node >= tree_size / 2;
     }
 
     public:
 
     int maxSearch(int father=0){
 
-        int base;
-        do {
-            base = (1 << father);
+        if (pheromones[getLeftChild(father)] == 0 && pheromones[getRightChild(father)] == 0) {
+            return -1;
+        }
 
-            if (pheromones[base + 1] < pheromones[base + 2]){
-                father = base + 2;
+        while (!isLeaf(father)) {
+            if (pheromones[getLeftChild(father)] < pheromones[getRightChild(father)]){
+                father = getRightChild(father);
             }else{
-                father = base + 1;
+                father = getLeftChild(father);
             }
-        } while (father > n-1);
+        }
 
-        return father;
+        return getNodeFromLeaf(father);
     }
     int randSearch(int father=0){
 
-        int base;
-        do {
-            base = (1 << father);
+        if (pheromones[getLeftChild(father)] == 0 && pheromones[getRightChild(father)] == 0) {
+            return -1;
+        }
 
-            if (pheromones[base + 1] != 0 && pheromones[base + 2] != 0) {
-                father = base + 1 + rand()%2;
+        while (!isLeaf(father)) {
+            if (pheromones[getLeftChild(father)] != 0 && pheromones[getRightChild(father)] != 0) {
+                father = getLeftChild(father) + rand()%2;
             } else {
-                if (pheromones[base + 1] != 0 ) {
-                    father = base + 1;
-                } else if (pheromones[base + 2] != 0) {
-                    father = base + 2;
+                if (pheromones[getLeftChild(father)] != 0 ) {
+                    father = getLeftChild(father);
                 } else {
-                    return -1;
+                    father = getRightChild(father);
                 }
             }
-        } while (father > n-1);
+        }
 
-        return father;
+        return getNodeFromLeaf(father);
     }
     int pondRandSearch(int father=0){
 
-        int base;
-        do {
-            base = (1 << father);
+        if (pheromones[getLeftChild(father)] == 0 && pheromones[getRightChild(father)] == 0) {
+            return -1;
+        }
 
-            if (rand() % (pheromones[base + 1] + pheromones[base + 2]) < pheromones[base + 2]) {
-                father = base + 2;
+        while (!isLeaf(father)) {
+            if (rand() % (pheromones[getLeftChild(father)] + pheromones[getRightChild(father)]) < pheromones[getLeftChild(father)]) {
+                father = getLeftChild(father);
             }else{
-                father = base + 1;
+                father = getRightChild(father);
             }
-        } while (father > n-1);
+        }
 
-        return father;
-    }
-
-    void invalidate(int node) {
-        node = getLeaf(node);
-        pheromones[node] = 0;
-        propagate(node);
+        return getNodeFromLeaf(father);
     }
 
 };

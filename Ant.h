@@ -25,13 +25,12 @@ struct Ant{
 
     int constructPondSolution() {
         // assumed empty solution
-        int node;
-        while ((node = tree.pondRandSearch()) != -1) {
+        for (int node = tree.pondRandSearch(); node != -1; node = tree.pondRandSearch()) {
             sol.push_back(node);
             // invalidate neighbors
-            for (int neighbor : nl->neighborhoods[node]) {
-                tree.invalidate(neighbor);
-            }
+            tree.invalidateVector(nl->neighborhoods[node]);
+            // invalidate node itself
+            tree.invalidate(node);
         }
         return sol.size();
     }
