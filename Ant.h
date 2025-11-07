@@ -5,22 +5,28 @@
 #include "PheromoneTree.h"
 
 struct Ant{
-    
+
     NeighList *nl;
-    MISP_Solution *sol;
-    pheromoneTree *tree;
+    MISP_Solution sol;
+    pheromoneTree tree;
 
-
-    Ant(NeighList *nl, float evaporation_rate){
+    Ant(NeighList *nl, float evaporation_rate) : sol(nl), tree(nl->n, evaporation_rate) {
         this->nl = nl;
-        this->sol = new MISP_Solution(nl);
-        this->tree = new pheromoneTree(nl->n, evaporation_rate);
+    }
+    ~Ant(){
+        sol.~MISP_Solution();
+        tree.~pheromoneTree();
     }
 
-    void constructSolution(vector<int> &solution){
-        // Implementation of solution construction using the NeighList
-        if(rand()%2) {
-            int node = tree.randSearch();
+    void constructPondSolution(vector<int> &solution){
+        // assumed empty solution
+        int node;
+        while ((node = tree.pondRandSearch()) != -1) {
+            solution.push_back(node);
+            // invalidate neighbors
+            for (int neighbor : nl->neighborhoods[node]) {
+                tree.invalidate(neighbor);
+            }
         }
     }
 

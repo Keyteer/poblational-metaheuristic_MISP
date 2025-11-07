@@ -22,6 +22,10 @@ struct pheromoneTree {
         delete[] pheromones;
     }
 
+    int getLeaf(int n) {
+        return n < this->n ? (n + this->n) : n;
+    }
+
     void evaporate() {
         for (int i = n; i < 2*n; i++) {
             pheromones[i] = static_cast<int>(pheromones[i] * (1.0 - evaporation_rate));
@@ -32,7 +36,9 @@ struct pheromoneTree {
         }
     }
     void deposit(int node, int amount) {
+        node = getLeaf(node);
         pheromones[node] += amount;
+        propagate(node);
     }
 
     private:
@@ -69,7 +75,6 @@ struct pheromoneTree {
 
         return father;
     }
-
     int randSearch(int father=0){
 
         int base;
@@ -91,14 +96,13 @@ struct pheromoneTree {
 
         return father;
     }
-
-    int pondSearch(int father=0){
+    int pondRandSearch(int father=0){
 
         int base;
         do {
             base = (1 << father);
 
-            if (pheromones[base + 1] < pheromones[base + 2]){
+            if (rand() % (pheromones[base + 1] + pheromones[base + 2]) < pheromones[base + 2]) {
                 father = base + 2;
             }else{
                 father = base + 1;
@@ -108,7 +112,8 @@ struct pheromoneTree {
         return father;
     }
 
-    void deletear(int node) {
+    void invalidate(int node) {
+        node = getLeaf(node);
         pheromones[node] = 0;
         propagate(node);
     }
