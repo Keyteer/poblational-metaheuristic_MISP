@@ -13,18 +13,12 @@ int main(int argc, char *argv[]) {
     char *path = nullptr;
     double time_limit = 10.0; // default time limit seconds
     float evaporation_rate = 0.01f; // default evaporation rate
-    int deposit_amount = 10; // default deposit amount
+    int deposit_amount = 100; // default deposit amount
 
-    // Parse command line arguments
+    // Parse required arguments
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-i") == 0 && i + 1 < argc) {
             path = argv[++i];
-        } else if (strcmp(argv[i], "-t") == 0 && i + 1 < argc) {
-            time_limit = atof(argv[++i]);
-        } else if (strcmp(argv[i], "-e") == 0 && i + 1 < argc) {
-            evaporation_rate = atof(argv[++i]);
-        } else if (strcmp(argv[i], "-d") == 0 && i + 1 < argc) {
-            deposit_amount = atoi(argv[++i]);
         }
     }
 
@@ -37,6 +31,17 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "  -e <evaporation_rate>        : Pheromone evaporation rate (default: %f)\n", evaporation_rate);
         fprintf(stderr, "  -d <deposit_amount>          : Pheromone deposit amount (default: %d)\n", deposit_amount);
         return 1;
+    }
+
+    // Parse optional arguments
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-t") == 0 && i + 1 < argc) {
+            time_limit = atof(argv[++i]);
+        } else if (strcmp(argv[i], "-e") == 0 && i + 1 < argc) {
+            evaporation_rate = atof(argv[++i]);
+        } else if (strcmp(argv[i], "-d") == 0 && i + 1 < argc) {
+            deposit_amount = atoi(argv[++i]);
+        }
     }
 
     if (time_limit <= 0) {

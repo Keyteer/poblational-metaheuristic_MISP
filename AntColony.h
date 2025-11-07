@@ -8,8 +8,9 @@ using namespace std;
 int AntColony(NeighList *nl, double time_limit, float evaporation_rate, int deposit_amount, bool verbose=false, int *iterations=nullptr) {
     auto start_time = chrono::high_resolution_clock::now();
 
+    int it = 0; // Trick to avoid using dynamic memory allocation
     if (iterations == nullptr) {
-        iterations = new int(0);
+        iterations = &it;
     }
     
     pheromoneTree pheromones(nl->n, evaporation_rate);
@@ -31,8 +32,13 @@ int AntColony(NeighList *nl, double time_limit, float evaporation_rate, int depo
         pheromones.evaporate();
 
         (*iterations)++;
-        
     }
+
+    if (verbose) {
+        printf("Best size found: %d in %d iterations\n", best_size, *iterations);
+    }
+
+    delete ant;
 
     return best_size;
 }
