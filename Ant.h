@@ -1,22 +1,21 @@
 #include <random>
+#include <vector>
 
-#include "utils.h"
 #include "NeighList.h"
 #include "PheromoneTree.h"
 
 struct Ant{
 
     NeighList *nl;
-    MISP_Solution sol;
+    vector<int> sol;
     pheromoneTree *global_tree;
     pheromoneTree tree;
 
-    Ant(NeighList *nl, pheromoneTree *tree) : sol(nl), tree(*tree) {
+    Ant(NeighList *nl, pheromoneTree *tree) : tree(*tree) {
         this->global_tree = tree;
         this->nl = nl;
     }
     ~Ant(){
-        sol.~MISP_Solution();
         tree.~pheromoneTree();
     }
     void reset() {
@@ -28,18 +27,18 @@ struct Ant{
         // assumed empty solution
         int node;
         while ((node = tree.pondRandSearch()) != -1) {
-            sol.addNode(node);
+            sol.push_back(node);
             // invalidate neighbors
             for (int neighbor : nl->neighborhoods[node]) {
                 tree.invalidate(neighbor);
             }
         }
-        return sol.size;
+        return sol.size();
     }
 
     void depositInSolution(int deposit_amount) {
-        for (int i = 0; i < sol.size; i++) {
-            global_tree->deposit(sol.solution[i], deposit_amount);
+        for (int node : sol) {
+            global_tree->deposit(node, deposit_amount);
         }
     }
 };
