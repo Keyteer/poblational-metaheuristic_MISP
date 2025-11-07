@@ -4,7 +4,7 @@
 #include <chrono>
 #include <ctime>
 #include <sys/stat.h>
-#include "ILS.h"
+#include "AntColony.h"
 #include "loader.h"
 
 
@@ -12,7 +12,8 @@ int main(int argc, char *argv[]) {
     // Default parameters
     char *path = nullptr;
     double time_limit = 10.0; // default time limit seconds
-    int perturbation_factor = 20; // default perturbation factor
+    float evaporation_rate = 0.01f; // default evaporation rate
+    int deposit_amount = 10; // default deposit amount
 
     // Parse command line arguments
     for (int i = 1; i < argc; i++) {
@@ -20,18 +21,21 @@ int main(int argc, char *argv[]) {
             path = argv[++i];
         } else if (strcmp(argv[i], "-t") == 0 && i + 1 < argc) {
             time_limit = atof(argv[++i]);
-        } else if (strcmp(argv[i], "-p") == 0 && i + 1 < argc) {
-            perturbation_factor = atof(argv[++i]);
+        } else if (strcmp(argv[i], "-e") == 0 && i + 1 < argc) {
+            evaporation_rate = atof(argv[++i]);
+        } else if (strcmp(argv[i], "-d") == 0 && i + 1 < argc) {
+            deposit_amount = atoi(argv[++i]);
         }
     }
 
     // Validate parameters
     if (path == nullptr) {
-        fprintf(stderr, "Usage: %s -i <path> [-t <time_limit_seconds>] [-p <perturbation>]\n", argv[0]);
+        fprintf(stderr, "Usage: %s -i <path> [-t <time_limit_seconds>] [-e <evaporation_rate>] [-d <deposit_amount>]\n", argv[0]);
         fprintf(stderr, "\nParameters:\n");
         fprintf(stderr, "  -i <path>                    : Path to the graph instance/s file/directory (required)\n");
         fprintf(stderr, "  -t <time_limit_seconds>      : Maximum execution time in seconds (default: %.2f)\n", time_limit);
-        fprintf(stderr, "  -p <perturbation_factor>     : Fraction of nodes to remove in perturbation step (default: %d)\n", perturbation_factor);
+        fprintf(stderr, "  -e <evaporation_rate>        : Pheromone evaporation rate (default: %f)\n", evaporation_rate);
+        fprintf(stderr, "  -d <deposit_amount>          : Pheromone deposit amount (default: %d)\n", deposit_amount);
         return 1;
     }
 
@@ -68,7 +72,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        iteratedLocalSearch(nl, time_limit, perturbation_factor, nullptr, true);
+        AntColony(nl, time_limit, evaporation_rate, deposit_amount);
 
         delete nl;
 
@@ -120,7 +124,7 @@ int main(int argc, char *argv[]) {
 
         // Run ILS and measure time
         auto start = std::chrono::high_resolution_clock::now();
-        int misp_size = iteratedLocalSearch(nl, time_limit, perturbation_factor, &iterations);
+        int misp_size = AntColony(nl, time_limit, evaporation_rate, deposit_amount, &iterations);
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = end - start;
         double execution_time = elapsed.count();

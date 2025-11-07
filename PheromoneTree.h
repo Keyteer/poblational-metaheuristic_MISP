@@ -3,18 +3,38 @@
 #include <random>
 
 struct pheromoneTree {
+    /*
+        pheromoneTree is a complete binary tree stored in an array.
+        The leaves represent the pheromone levels of the nodes in the graph.
+        Internal nodes store the sum of pheromone levels of their children.
+    */
 
     int n;
+    int tree_size;
     int *pheromones;
     float evaporation_rate;
 
-
+    pheromoneTree(pheromoneTree const &other) {
+        n = other.n;
+        tree_size = other.tree_size;
+        evaporation_rate = other.evaporation_rate;
+        pheromones = new int[tree_size];
+        memcpy(pheromones, other.pheromones, tree_size * sizeof(int));
+    }
     pheromoneTree(int n , float evaporation_rate) {
-        this->n = n;
-        pheromones = new int[(2*n)-1];
-        for (int i = n; i < 2*n; i++) {
-            pheromones[i] = 1;
+        int i = 1;
+        while( i < n) {
+            // search smallest power of 2 greater than n
+            i = i << 1;
+        }
+        tree_size = i*2 - 1;
 
+        this->n = n;
+        pheromones = new int[tree_size];
+        memset(pheromones, 0, tree_size * sizeof(int));
+        for (int i = getLeaf(0); i < getLeaf(n - 1); i++) {
+            pheromones[i] = 1;
+            propagate(i);
         }
         this->evaporation_rate = evaporation_rate;
     }
@@ -22,8 +42,27 @@ struct pheromoneTree {
         delete[] pheromones;
     }
 
-    int getLeaf(int n) {
-        return n < this->n ? (n + this->n) : n;
+    pheromoneTree& operator=(const pheromoneTree& other) {
+        if (this != &other) {
+            delete[] pheromones;
+            n = other.n;
+            tree_size = other.tree_size;
+            evaporation_rate = other.evaporation_rate;
+            pheromones = new int[tree_size];
+            memcpy(pheromones, other.pheromones, tree_size * sizeof(int));
+        }
+        return *this;
+    }
+
+    inline int getLeaf(int node) {
+        if (node < n) {
+            return node + tree_size / 2;
+        } else if (node > tree_size / 2) {
+            return node;
+        }else{
+            throw std::out_of_range("Node index is not a valid leaf");
+        }
+        return -1;
     }
 
     void evaporate() {

@@ -35,6 +35,10 @@ struct MISP_Solution {
         delete[] MISP_IndependentDegree;
         delete[] solution;
     }
+    void clear() {
+        size = 0;
+        memset(MISP_IndependentDegree, 0, graph->n * sizeof(int));
+    }
 
     void addNode(int node) {
         if (MISP_IndependentDegree[node] > 0) {
