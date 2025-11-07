@@ -14,6 +14,7 @@ int main(int argc, char *argv[]) {
     double time_limit = 10.0; // default time limit seconds
     float evaporation_rate = 0.01f; // default evaporation rate
     int deposit_amount = 100; // default deposit amount
+    bool verbose = false; // verbose flag
 
     // Parse required arguments
     for (int i = 1; i < argc; i++) {
@@ -24,12 +25,13 @@ int main(int argc, char *argv[]) {
 
     // Validate parameters
     if (path == nullptr) {
-        fprintf(stderr, "Usage: %s -i <path> [-t <time_limit_seconds>] [-e <evaporation_rate>] [-d <deposit_amount>]\n", argv[0]);
+        fprintf(stderr, "Usage: %s -i <path> [-t <time_limit_seconds>] [-e <evaporation_rate>] [-d <deposit_amount>] [-v]\n", argv[0]);
         fprintf(stderr, "\nParameters:\n");
         fprintf(stderr, "  -i <path>                    : Path to the graph instance/s file/directory (required)\n");
         fprintf(stderr, "  -t <time_limit_seconds>      : Maximum execution time in seconds (default: %.2f)\n", time_limit);
         fprintf(stderr, "  -e <evaporation_rate>        : Pheromone evaporation rate (default: %f)\n", evaporation_rate);
         fprintf(stderr, "  -d <deposit_amount>          : Pheromone deposit amount (default: %d)\n", deposit_amount);
+        fprintf(stderr, "  -v                           : Verbose output for improvements during search\n");
         return 1;
     }
 
@@ -41,6 +43,8 @@ int main(int argc, char *argv[]) {
             evaporation_rate = atof(argv[++i]);
         } else if (strcmp(argv[i], "-d") == 0 && i + 1 < argc) {
             deposit_amount = atoi(argv[++i]);
+        } else if (strcmp(argv[i], "-v") == 0) {
+            verbose = true;
         }
     }
 
@@ -57,7 +61,6 @@ int main(int argc, char *argv[]) {
 
     char **fileNames;
     int fileCount = 0;
-
 
     if (S_ISDIR(path_stat.st_mode)) {
         // directory
@@ -77,7 +80,11 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        AntColony(nl, time_limit, evaporation_rate, deposit_amount, true);
+        int result = AntColony(nl, time_limit, evaporation_rate, deposit_amount, verbose);
+
+        if (!verbose) {
+            printf("%d\n", - result); // print negative for irace minimization
+        }
 
         delete nl;
 
@@ -129,7 +136,7 @@ int main(int argc, char *argv[]) {
 
         // Run ILS and measure time
         auto start = std::chrono::high_resolution_clock::now();
-        int misp_size = AntColony(nl, time_limit, evaporation_rate, deposit_amount, &iterations);
+        int misp_size = AntColony(nl, time_limit, evaporation_rate, deposit_amount, verbose, &iterations);
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = end - start;
         double execution_time = elapsed.count();
