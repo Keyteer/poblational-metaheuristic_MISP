@@ -40,9 +40,19 @@ struct Ant{
     /*
         depositInSolution: deposits pheromones in all nodes of the current solution.
     */
-    void depositInSolution(int deposit_amount) {
+    void depositInSolution(float deposit_amount) {
         for (int node : sol) {
             global_tree->deposit(node, deposit_amount);
+        }
+    }
+
+
+    /*
+    
+    */
+    void depositToSetAmountInSolution(float deposit_amount) {
+        for (int node : sol) {
+            global_tree->setPheromone(node, deposit_amount);
         }
     }
 };

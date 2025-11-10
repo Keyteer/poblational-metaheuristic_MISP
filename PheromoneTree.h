@@ -13,7 +13,7 @@ struct pheromoneTree {
 
     int n;                      // number of leaves (nodes in the graph)
     int tree_size;              // total size of the tree array  
-    int *pheromones;            // array storing pheromone levels
+    float *pheromones;          // array storing pheromone levels
     float evaporation_rate;     // rate at which pheromones evaporate
 
     /*
@@ -23,8 +23,8 @@ struct pheromoneTree {
         n = other.n;
         tree_size = other.tree_size;
         evaporation_rate = other.evaporation_rate;
-        pheromones = new int[tree_size];
-        memcpy(pheromones, other.pheromones, tree_size * sizeof(int));
+        pheromones = new float[tree_size];
+        memcpy(pheromones, other.pheromones, tree_size * sizeof(float));
     }
     /* 
         Constructor: initializes the pheromone tree with n leaves and sets
@@ -42,10 +42,10 @@ struct pheromoneTree {
         this->evaporation_rate = evaporation_rate;
         
         // initialize pheromone levels
-        pheromones = new int[tree_size];
-        memset(pheromones, 0, tree_size * sizeof(int));
+        pheromones = new float[tree_size];
+        memset(pheromones, 0, tree_size * sizeof(float));
         for (int i = getLeaf(0); i <= getLeaf(n - 1); i++) {
-            pheromones[i] = 1;
+            pheromones[i] = 1.0f;
         }
         propagateAll();
     }
@@ -62,8 +62,8 @@ struct pheromoneTree {
             n = other.n;
             tree_size = other.tree_size;
             evaporation_rate = other.evaporation_rate;
-            pheromones = new int[tree_size];
-            memcpy(pheromones, other.pheromones, tree_size * sizeof(int));
+            pheromones = new float[tree_size];
+            memcpy(pheromones, other.pheromones, tree_size * sizeof(float));
         }
         return *this;
     }
@@ -75,9 +75,9 @@ struct pheromoneTree {
     */
     void evaporate() {
         for (int i = getLeaf(0); i <= getLeaf(n - 1); i++) {
-            pheromones[i] = static_cast<int>(pheromones[i] * (1.0 - evaporation_rate));
-            if (pheromones[i] < 1) {
-                pheromones[i] = 1; 
+            pheromones[i] = pheromones[i] * (1.0f - evaporation_rate);
+            if (pheromones[i] < 1.0f) {
+                pheromones[i] = 1.0f; 
             }
         }
         propagateAll();
@@ -85,7 +85,7 @@ struct pheromoneTree {
     /*
         Deposit: add pheromones to a node and propagate the changes up the tree.
     */
-    void deposit(int node, int amount) {
+    void deposit(int node, float amount) {
         node = getLeaf(node);
         pheromones[node] += amount;
         propagate(node);
@@ -95,10 +95,10 @@ struct pheromoneTree {
     */
     void invalidate(int node) {
         node = getLeaf(node);
-        if (pheromones[node] == 0) {
+        if (pheromones[node] == 0.0f) {
             return;
         }
-        pheromones[node] = 0;
+        pheromones[node] = 0.0f;
         propagate(node);
     }
     /*
@@ -106,9 +106,17 @@ struct pheromoneTree {
     */
     void invalidateVector(const std::vector<int>& nodes) {
         for (int node : nodes) {
-            pheromones[getLeaf(node)] = 0;
+            pheromones[getLeaf(node)] = 0.0f;
         }
         propagateAll();
+    }
+    /*
+        SetPheromone: set the pheromone level of a node to a specific value and propagate the changes up the tree.
+    */
+    void setPheromone(int node, float value) {
+        node = getLeaf(node);
+        pheromones[node] = value;
+        propagate(node);
     }
 
     private:
@@ -178,7 +186,7 @@ struct pheromoneTree {
     int maxSearch(int father=0){
 
         // if both children are 0 pheromone, return -1
-        if (pheromones[getLeftChild(father)] == 0 && pheromones[getRightChild(father)] == 0) {
+        if (pheromones[getLeftChild(father)] == 0.0f && pheromones[getRightChild(father)] == 0.0f) {
             return -1;
         }
         // Find the maximum pheromone child till leaf
@@ -198,18 +206,18 @@ struct pheromoneTree {
     int randSearch(int father=0){
 
         // if both children are 0 pheromone, return -1
-        if (pheromones[getLeftChild(father)] == 0 && pheromones[getRightChild(father)] == 0) {
+        if (pheromones[getLeftChild(father)] == 0.0f && pheromones[getRightChild(father)] == 0.0f) {
             return -1;
         }
 
         // random walk down the tree
         while (!isLeaf(father)) {
             // if both children have pheromones, choose randomly
-            if (pheromones[getLeftChild(father)] != 0 && pheromones[getRightChild(father)] != 0) {
+            if (pheromones[getLeftChild(father)] != 0.0f && pheromones[getRightChild(father)] != 0.0f) {
                 father = getLeftChild(father) + rand()%2;
             } else {
                 // if one child is 0 pheromone, go to the other
-                if (pheromones[getLeftChild(father)] != 0 ) {
+                if (pheromones[getLeftChild(father)] != 0.0f ) {
                     father = getLeftChild(father);
                 } else {
                     father = getRightChild(father);
@@ -224,13 +232,15 @@ struct pheromoneTree {
     */
     int pondRandSearch(int father=0){
         // if both children are 0 pheromone, return -1
-        if (pheromones[getLeftChild(father)] == 0 && pheromones[getRightChild(father)] == 0) {
+        if (pheromones[getLeftChild(father)] == 0.0f && pheromones[getRightChild(father)] == 0.0f) {
             return -1;
         }
         // biased random walk down the tree
         while (!isLeaf(father)) {
             // choose child based on pheromone levels
-            if (rand() % (pheromones[getLeftChild(father)] + pheromones[getRightChild(father)]) < pheromones[getLeftChild(father)]) {
+            float total = pheromones[getLeftChild(father)] + pheromones[getRightChild(father)];
+            float randVal = static_cast<float>(rand()) / RAND_MAX * total;
+            if (randVal < pheromones[getLeftChild(father)]) {
                 father = getLeftChild(father);
             }else{
                 father = getRightChild(father);
