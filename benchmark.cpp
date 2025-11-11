@@ -13,7 +13,8 @@ int main(int argc, char *argv[]) {
     char *path = nullptr;
     double time_limit = 10.0; // default time limit seconds
     float evaporation_rate = 0.01f; // default evaporation rate
-    int deposit_amount = 100; // default deposit amount
+    float deposit_amount = 10.0f; // default deposit amount
+    bool proportional_deposit_type = true; // default deposit type
     bool verbose = false; // verbose flag
 
     // Parse required arguments
@@ -25,13 +26,14 @@ int main(int argc, char *argv[]) {
 
     // Validate parameters
     if (path == nullptr) {
-        fprintf(stderr, "Usage: %s -i <path> [-t <time_limit_seconds>] [-e <evaporation_rate>] [-d <deposit_amount>] [-v]\n", argv[0]);
+        fprintf(stderr, "Usage: %s -i <path> [-t <time_limit_seconds>] [-e <evaporation_rate>] [-d <deposit_amount>] [-p <proportional_deposit_type>] [-v]\n", argv[0]);
         fprintf(stderr, "\nParameters:\n");
-        fprintf(stderr, "  -i <path>                    : Path to the graph instance/s file/directory (required)\n");
-        fprintf(stderr, "  -t <time_limit_seconds>      : Maximum execution time in seconds (default: %.2f)\n", time_limit);
-        fprintf(stderr, "  -e <evaporation_rate>        : Pheromone evaporation rate (default: %f)\n", evaporation_rate);
-        fprintf(stderr, "  -d <deposit_amount>          : Pheromone deposit amount (default: %d)\n", deposit_amount);
-        fprintf(stderr, "  -v                           : Verbose output for improvements during search\n");
+        fprintf(stderr, "  -i <path>                : Path to the graph instance/s file/directory (required)\n");
+        fprintf(stderr, "  -t <time_limit_seconds>  : Maximum execution time in seconds (default: %.2f)\n", time_limit);
+        fprintf(stderr, "  -e <evaporation_rate>    : Pheromone evaporation rate (default: %f)\n", evaporation_rate);
+        fprintf(stderr, "  -d <deposit_amount>      : Pheromone deposit amount (default: %.2f)\n", deposit_amount);
+        fprintf(stderr, "  -p <deposit_type>        : Pheromone deposit type: 'proportional' or 'fixed' (default: proportional = %s)\n", proportional_deposit_type? "true" : "false");
+        fprintf(stderr, "  -v                       : Verbose output for improvements during search (On single file case)\n");
         return 1;
     }
 
@@ -42,7 +44,9 @@ int main(int argc, char *argv[]) {
         } else if (strcmp(argv[i], "-e") == 0 && i + 1 < argc) {
             evaporation_rate = atof(argv[++i]);
         } else if (strcmp(argv[i], "-d") == 0 && i + 1 < argc) {
-            deposit_amount = atoi(argv[++i]);
+            deposit_amount = atof(argv[++i]);
+        } else if (strcmp(argv[i], "-p") == 0 && i + 1 < argc) {
+            proportional_deposit_type = argv[++i];
         } else if (strcmp(argv[i], "-v") == 0) {
             verbose = true;
         }
@@ -80,7 +84,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        int result = AntColony(nl, time_limit, evaporation_rate, deposit_amount, verbose);
+        int result = AntColony(nl, time_limit, evaporation_rate, deposit_amount, proportional_deposit_type, verbose);
 
         if (!verbose) {
             printf("%d\n", - result); // print negative for irace minimization
@@ -136,7 +140,7 @@ int main(int argc, char *argv[]) {
 
         // Run ILS and measure time
         auto start = std::chrono::high_resolution_clock::now();
-        int misp_size = AntColony(nl, time_limit, evaporation_rate, deposit_amount, verbose, &iterations);
+        int misp_size = AntColony(nl, time_limit, evaporation_rate, deposit_amount, proportional_deposit_type, &iterations);
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = end - start;
         double execution_time = elapsed.count();
