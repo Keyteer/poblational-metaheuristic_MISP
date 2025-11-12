@@ -41,16 +41,20 @@ NeighList *loadGraph(const char *filename) {
     }
 
     int n;
-    fscanf(fp, "%d", &n);
-    
+    if (fscanf(fp, "%d", &n) != 1) {
+        perror("Error reading number of nodes");
+        fclose(fp);
+        return nullptr;
+    }
+
     NeighList *nl = new NeighList(n);
 
     while(!feof(fp)) {
         int u, v;
-        fscanf(fp, "%d %d", &u, &v);
-
-        nl->push(u, v);
-        nl->push(v, u);
+        if (fscanf(fp, "%d %d", &u, &v) == 2) {
+            nl->push(u, v);
+            nl->push(v, u);
+        }
     }
 
     fclose(fp);

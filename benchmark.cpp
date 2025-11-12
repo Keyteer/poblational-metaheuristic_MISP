@@ -46,7 +46,14 @@ int main(int argc, char *argv[]) {
         } else if (strcmp(argv[i], "-d") == 0 && i + 1 < argc) {
             deposit_amount = atof(argv[++i]);
         } else if (strcmp(argv[i], "-p") == 0 && i + 1 < argc) {
-            proportional_deposit_type = argv[++i];
+            if (strcmp(argv[++i], "proportional") == 0) {
+                proportional_deposit_type = true;
+            } else if (strcmp(argv[i], "fixed") == 0) {
+                proportional_deposit_type = false;
+            } else {
+                fprintf(stderr, "Error: Invalid deposit type '%s'. Use 'proportional' or 'fixed'.\n", argv[i]);
+                return 1;
+            }
         } else if (strcmp(argv[i], "-v") == 0) {
             verbose = true;
         }
@@ -140,7 +147,7 @@ int main(int argc, char *argv[]) {
 
         // Run ILS and measure time
         auto start = std::chrono::high_resolution_clock::now();
-        int misp_size = AntColony(nl, time_limit, evaporation_rate, deposit_amount, proportional_deposit_type, &iterations);
+        int misp_size = AntColony(nl, time_limit, evaporation_rate, deposit_amount, proportional_deposit_type, false, &iterations);
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = end - start;
         double execution_time = elapsed.count();
