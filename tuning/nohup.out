@@ -1,0 +1,204 @@
+#------------------------------------------------------------------------------
+# irace: An implementation in R of (Elitist) Iterated Racing
+# Version: 3.5.6863679
+# Copyright (C) 2010-2020
+# Manuel Lopez-Ibanez     <manuel.lopez-ibanez@manchester.ac.uk>
+# Jeremie Dubois-Lacoste  
+# Leslie Perez Caceres    <leslie.perez.caceres@ulb.ac.be>
+#
+# This is free software, and you are welcome to redistribute it under certain
+# conditions.  See the GNU General Public License for details. There is NO
+# WARRANTY; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# irace builds upon previous code from the race package:
+#     race: Racing methods for the selection of the best
+#     Copyright (C) 2003 Mauro Birattari
+#------------------------------------------------------------------------------
+# installed at: /home/shared/sisadapt15/R/x86_64-pc-linux-gnu-library/3.6/irace
+# called with: 
+== irace == WARNING: A default scenario file '/home/shared/sisadapt15/tuningDefault/scenario.txt' has been found and will be read.
+# 2025-11-12 16:24:41 -03: Initialization
+# Elitist race
+# Elitist new instances: 1
+# Elitist limit: 2
+# nbIterations: 3
+# minNbSurvival: 3
+# nbParameters: 3
+# seed: 1760001414
+# confidence level: 0.95
+# budget: 1000
+# mu: 5
+# deterministic: FALSE
+
+# 2025-11-12 16:24:41 -03: Iteration 1 of 3
+# experimentsUsedSoFar: 0
+# remainingBudget: 1000
+# currentBudget: 333
+# nbConfigurations: 55
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|       Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+|x|          1|         55|         12|    -75.00000000|         55|00:00:56|   NA|  NA|    NA|
+|x|          2|         55|         12|    -45.00000000|        110|00:01:00|+0.33|0.67|0.5905|
+|x|          3|         55|         12|    -51.00000000|        165|00:00:56|+0.52|0.68|0.4292|
+|x|          4|         55|         12|    -41.75000000|        220|00:00:57|+0.48|0.61|0.4608|
+|-|          5|         26|         12|    -34.40000000|        275|00:00:57|-0.05|0.16|0.8151|
+|=|          6|         26|         12|    -29.66666667|        301|00:00:36|-0.04|0.13|0.6716|
+|=|          7|         26|         12|    -27.57142857|        327|00:00:32|-0.02|0.12|0.7010|
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+Best-so-far configuration:          12    mean value:     -27.57142857
+Description of the best-so-far configuration:
+   .ID. evap_rate deposit_amount deposit_type .PARENT.
+12   12     0.112             20 proportional       NA
+
+# 2025-11-12 16:30:39 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+   evap_rate deposit_amount deposit_type
+12     0.112             20 proportional
+25     0.261             50 proportional
+4      0.061             50 proportional
+# 2025-11-12 16:30:39 -03: Iteration 2 of 3
+# experimentsUsedSoFar: 327
+# remainingBudget: 673
+# currentBudget: 336
+# nbConfigurations: 44
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|       Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+|x|          8|         44|         85|    -80.00000000|         44|00:00:46|   NA|  NA|    NA|
+|x|          2|         44|         85|    -47.50000000|         85|00:00:45|+0.22|0.61|0.7799|
+|x|          7|         44|         73|    -36.66666667|        126|00:00:50|+0.07|0.38|0.9460|
+|x|          5|         44|         73|    -28.75000000|        167|00:00:43|+0.05|0.29|0.7173|
+|=|          6|         44|         73|    -24.20000000|        208|00:00:58|+0.04|0.23|0.5770|
+|=|          4|         44|         73|    -22.50000000|        249|00:00:42|+0.05|0.21|0.6237|
+|-|          3|         21|         73|    -28.28571429|        290|00:00:41|-0.03|0.12|0.7047|
+|=|          1|         21|         73|    -33.87500000|        308|00:00:18|+0.05|0.17|0.6906|
+|=|          9|         21|         73|    -30.77777778|        329|00:00:24|+0.05|0.15|0.6165|
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+Best-so-far configuration:          73    mean value:     -30.77777778
+Description of the best-so-far configuration:
+   .ID. evap_rate deposit_amount deposit_type .PARENT.
+73   73     0.199            100 proportional        4
+
+# 2025-11-12 16:36:51 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+   evap_rate deposit_amount deposit_type
+73     0.199            100 proportional
+85     0.226            100 proportional
+77     0.209             50        fixed
+# 2025-11-12 16:36:51 -03: Iteration 3 of 3
+# experimentsUsedSoFar: 656
+# remainingBudget: 344
+# currentBudget: 344
+# nbConfigurations: 37
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|       Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+|x|         10|         37|         73|    -14.00000000|         37|00:00:38|   NA|  NA|    NA|
+|x|          7|         37|         73|    -15.00000000|         71|00:00:41|+0.21|0.61|0.7778|
+|x|          9|         37|         73|    -12.00000000|        105|00:00:40|+0.11|0.40|0.5836|
+|x|          6|         37|         73|    -10.50000000|        139|00:00:48|+0.07|0.30|0.4539|
+|-|          3|         25|        127|    -21.60000000|        173|00:00:34|-0.09|0.13|0.4277|
+|=|          4|         25|        127|    -20.33333333|        195|00:00:22|-0.07|0.10|0.3492|
+|=|          8|         25|         85|    -28.57142857|        217|00:00:23|-0.09|0.06|0.4474|
+|=|          5|         25|         85|    -25.62500000|        239|00:00:23|-0.08|0.06|0.3870|
+|=|          1|         25|         85|    -30.88888889|        261|00:00:22|-0.02|0.09|0.4351|
+|=|          2|         25|         85|    -29.30000000|        283|00:00:24|-0.02|0.08|0.4931|
+|=|         11|         25|         85|    -27.18181818|        308|00:00:29|-0.02|0.07|0.4470|
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+Best-so-far configuration:          85    mean value:     -27.18181818
+Description of the best-so-far configuration:
+   .ID. evap_rate deposit_amount deposit_type .PARENT.
+85   85     0.226            100 proportional       25
+
+# 2025-11-12 16:42:41 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+   evap_rate deposit_amount deposit_type
+85     0.226            100 proportional
+73     0.199            100 proportional
+98     0.300            500 proportional
+# 2025-11-12 16:42:41 -03: Iteration 4 of 4
+# experimentsUsedSoFar: 964
+# remainingBudget: 36
+# currentBudget: 36
+# nbConfigurations: 5
+# Markers:
+     x No test is performed.
+     c Configurations are discarded only due to capping.
+     - The test is performed and some configurations are discarded.
+     = The test is performed but no configuration is discarded.
+     ! The test is performed and configurations could be discarded but elite configurations are preserved.
+     . All alive configurations are elite and nothing is discarded
+
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+| |   Instance|      Alive|       Best|       Mean best| Exp so far|  W time|  rho|KenW|  Qvar|
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+|x|         12|          5|         85|    -73.00000000|          5|00:00:05|   NA|  NA|    NA|
+|x|          5|          5|         85|    -39.00000000|          7|00:00:02|+0.00|0.50|0.4000|
+|x|          7|          5|         73|    -31.33333333|          9|00:00:02|-0.16|0.23|0.6422|
+|x|          1|          5|         73|    -41.75000000|         11|00:00:02|+0.09|0.31|0.5755|
+|=|          6|          5|         73|    -34.60000000|         13|00:00:02|+0.06|0.25|0.4653|
+|=|          8|          5|         73|    -42.00000000|         15|00:00:02|+0.20|0.34|0.4420|
+|=|          9|          5|         73|    -36.85714286|         17|00:00:02|+0.17|0.29|0.3919|
+|=|         10|          5|         73|    -34.00000000|         19|00:00:02|+0.15|0.25|0.3511|
+|=|          4|          5|         73|    -31.77777778|         21|00:00:02|+0.13|0.22|0.3175|
+|=|          2|          5|         73|    -30.10000000|         23|00:00:02|+0.11|0.20|0.3656|
+|-|          3|          3|         73|    -33.09090909|         25|00:00:02|-0.05|0.05|0.2575|
+|.|         11|          3|         73|    -30.83333333|         25|00:00:00|-0.05|0.04|0.2348|
++-+-----------+-----------+-----------+----------------+-----------+--------+-----+----+------+
+Best-so-far configuration:          85    mean value:     -31.00000000
+Description of the best-so-far configuration:
+   .ID. evap_rate deposit_amount deposit_type .PARENT.
+85   85     0.226            100 proportional       25
+
+# 2025-11-12 16:43:08 -03: Elite configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+   evap_rate deposit_amount deposit_type
+85     0.226            100 proportional
+73     0.199            100 proportional
+98     0.300            500 proportional
+# 2025-11-12 16:43:08 -03: Stopped because there is not enough budget left to race more than the minimum (3)
+# You may either increase the budget or set 'minNbSurvival' to a lower value
+# Iteration: 5
+# nbIterations: 5
+# experimentsUsedSoFar: 989
+# timeUsed: 0
+# remainingBudget: 11
+# currentBudget: 11
+# number of elites: 3
+# nbConfigurations: 3
+# Total CPU user time: 1096.783, CPU sys time: 6.397, Wall-clock time: 1107.055
+# Best configurations (first number is the configuration ID; listed from best to worst according to the sum of ranks):
+   evap_rate deposit_amount deposit_type
+85     0.226            100 proportional
+73     0.199            100 proportional
+98     0.300            500 proportional
+# Best configurations as commandlines (first number is the configuration ID; same order as above):
+85  -e 0.226 -d 100 -p proportional
+73  -e 0.199 -d 100 -p proportional
+98  -e 0.3 -d 500 -p proportional
+
+
+# Testing of elite configurations: 1 
+# Testing iteration configurations: FALSE 
+# 2025-11-12 16:43:08 -03: No test instances, skip testing

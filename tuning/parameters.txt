@@ -28,3 +28,4 @@
 # 1:               2:           3:      4:        5:
 evap_rate          "-e "        r       (0,1)
 deposit_amount     "-d "        o       (10,20,50,100,500,1000,5000,10000,100000)
+deposit_type       "-p "	c	(proportional,fixed)

@@ -25,26 +25,28 @@ $F[0..n-1] \gets 1$\;
     $v \gets$ selección aleatoria ponderada por $F$\;
     agregar $v$ a $sol$\;
     $F[v] \gets 0$\;
-    \ForEach{$u$ en nl($v$)}{$F[u] \gets 0$}
+    \ForEach{$u$ en nl($v$)}{
+      $F[u] \gets 0$\;
+    }
+  }
+
+  \BlankLine
+  \tcc{Depósito de feromonas}
+  \ForEach{$u$ en $sol$}{
+    $F[u] \gets F[u] + d * frac|sol| / bestSize$\;
   }
 
   \BlankLine
   \tcc{Actualización de la mejor solución}
   \If{$|sol| > bestSize$}{
     $bestSize \gets |sol|$\;
-
-    \BlankLine
-    \tcc{Depósito de feromonas}
-    \ForEach{$u$ en $sol$}{
-      $F[u] \gets F[u] + d$
-    }
   }
 
   \BlankLine
   \tcc{Evaporación de feromonas}
   \For{$i \gets 0$ \KwTo $n-1$}{
-    $F[i] \gets \lfloor F[i]\cdot(1-e) \rfloor$
-    $F[i] \gets \max(1, F[i])$
+    $F[i] \gets \lfloor F[i]\cdot(1-e) \rfloor$\;
+    $F[i] \gets \max(1, F[i])$\;
   }
 }
 \Return{$bestSize$}
