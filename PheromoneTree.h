@@ -244,10 +244,10 @@ struct pheromoneTree {
             // choose child based on pheromone levels
             float total = pheromones[getLeftChild(father)] + pheromones[getRightChild(father)];
             float randVal = static_cast<float>(rand()) / RAND_MAX * total;
-            if (randVal < pheromones[getLeftChild(father)]) {
-                father = getLeftChild(father);
-            }else{
-                father = getRightChild(father);
+            if (randVal <= pheromones[getLeftChild(father)] ){
+                father = getLeftChild(father) > 0.0f? getLeftChild(father) : getRightChild(father);
+            } else {
+                father = getRightChild(father) > 0.0f? getRightChild(father) : getLeftChild(father);
             }
         }
 
