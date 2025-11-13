@@ -4,6 +4,9 @@
 #include <vector>
 #include <stdexcept>
 
+// fix seeded for reproducibility
+#define RANDOM_SEED 42
+
 struct pheromoneTree {
     /*
         pheromoneTree is a complete binary tree stored in an array.
@@ -22,6 +25,7 @@ struct pheromoneTree {
     pheromoneTree(pheromoneTree const &other) {
         n = other.n;
         tree_size = other.tree_size;
+        srand(RANDOM_SEED);
         evaporation_rate = other.evaporation_rate;
         pheromones = new float[tree_size];
         memcpy(pheromones, other.pheromones, tree_size * sizeof(float));
@@ -145,7 +149,7 @@ struct pheromoneTree {
     inline int getLeaf(int node) {
         if (node < n) {
             return node + tree_size / 2;
-        } else if (node > tree_size / 2) {
+        } else if (node > tree_size / 2 && node < tree_size) {
             return node;
         }else{
             throw std::out_of_range("Node index is not a valid leaf");
